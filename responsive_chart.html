@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ch16</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #chart {
+      display: flex;
+      background-color: lightgray;
+    }
+
+    svg {
+      background-color: lightblue;
+    }
+  </style>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script> -->
+</head>
+
+<body>
+  <div style="padding-bottom: 1em">
+    <button onClick="resizeSVG(400, 400)">SVG 400x400</button>
+    <button onClick="resizeSVG(600, 600)">SVG 600x600</button>
+  </div>
+  <div id="chart"></div>
+  <script>
+    var data = [5, 10, 15, 20, 25];
+    var width = 400;
+    var height = 400;
+
+    var xScale = d3.scaleBand()
+      .domain(data)
+      .range([0, width])
+      .padding(0.2);
+
+    var bandwidth = xScale.bandwidth();
+
+    var yScale = d3.scaleLinear()
+      .domain([0, d3.max(data)])
+      .range([0, height]);
+
+    function init(selection) {
+      selection.selectAll('rect')
+        .data(data)
+        .enter()
+        .append('rect')
+        .style('fill', 'green')
+        .attr('x', (d) => xScale(d))
+        .attr('y', d => height - yScale(d))
+        .attr('width', bandwidth)
+        .attr('height', d => yScale(d))
+    }
+
+    function resizeSVG(w, h) {
+      d3.select('#chart svg')
+        .attr('width', w)
+        .attr('height', h);
+    }
+
+    d3.select('#chart')
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('viewBox', '0 0 ' + width + ' ' + height)
+      .call(init);
+  </script>
+</body>
+
+</html>
