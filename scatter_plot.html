@@ -59,7 +59,7 @@
 
     var yScale = d3.scaleLinear()
       .domain([0, dataMax])
-      .range([0, h]);
+      .range([h, 0]);
 
     var colorScale3 = d3.scaleQuantile()
       .domain([0, 10, dataset.length - 10, dataset.length])
@@ -75,7 +75,7 @@
       .data(dataset)
       .enter()
       .append('circle')
-      .attr('cx', d => xScale(d.x)) // this multiplication value should be greater than the width of the bar
+      .attr('cx', d => xScale(d.x))
       .attr('cy', d => h - yScale(d.y))
       .attr('class', 'bubble')
       .attr('r', d => d.r);

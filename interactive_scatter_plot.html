@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Ch11</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    #chartArea {
+      background-color: #ccc;
+      width: 500px;
+      height: 400px;
+    }
+
+    .dot {
+      fill: teal;
+      fill-opacity: 0.7;
+      stroke: black;
+    }
+
+    .active {
+      fill: magenta;
+      fill-opacity: 0.5;
+      stroke-width: 3px;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      stroke-width: 1px;
+      shape-rendering: crispEdges;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
+  <!-- <script src="main.js"></script> -->
+</head>
+
+<body>
+  <div id="chartArea"></div>
+  <script>
+    var dataset = _.map(_.range(25), function (i) {
+      return {
+        x: Math.round(Math.random() * 100),
+        y: Math.round(Math.random() * 100),
+        r: Math.round(5 + Math.random() * 10)
+      }
+    })
+
+    var margin = {
+      top: 20,
+      right: 20,
+      bottom: 60,
+      left: 60
+    }
+    var w = 500 - margin.left - margin.right,
+      h = 400 - margin.top - margin.bottom;
+    var dataMax = d3.max(dataset, d => d.y);
+
+    var svg = d3.select('#chartArea').append('svg')
+      .attr('width', w + margin.left + margin.right)
+      .attr('height', h + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    var xScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([0, w]);
+
+    var xAxis = d3.axisBottom()
+      .scale(xScale)
+      .ticks(5)
+      .tickSizeInner(6)
+      .tickSizeOuter(12)
+      .tickPadding(12);
+    svg.append('g')
+      .attr('class', 'xAxis')
+      .attr('transform', 'translate(0' + ',' + (h + 0) + ')')
+      .call(xAxis);
+
+    var yScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([h, 0]);
+
+    var yAxis = d3.axisLeft()
+      .scale(yScale);
+
+    svg.append('g')
+      .attr('class', 'yAxis')
+      .attr('transform', 'translate(0,0)')
+      .call(yAxis);
+
+    svg.selectAll('circle')
+      .data(dataset)
+      .enter()
+      .append('circle')
+      .attr('class', 'dot')
+      .attr('cx', d => xScale(d.x))
+      .attr('cy', d => h - yScale(d.y))
+      .attr('r', d => d.r)
+      .on("mouseover", function (d) {
+        // d3.select(this).style("fill", "red"); //if we have more than 1 property than it is better to use css class
+        d3.select(this).classed('active', true);
+      })
+      .on('mousedown', function (d) {
+        d3.select(this).attr('r', d.r * 2)
+      })
+      .on('mouseup', function (d) {
+        d3.select(this).attr('r', d.r)
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).classed('active', false);
+      });
+  </script>
+</body>
+
+</html>
