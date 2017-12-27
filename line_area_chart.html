@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Ch15</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* below is for line chart */
+    /* path {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 3px;
+    } */
+    /* Below is for area chart */
+
+    path {
+      fill: purple;
+      fill-opacity: 0.7;
+    }
+
+    #chartArea {
+      width: 600px;
+      height: 400px;
+      border: 1px solid black;
+      margin-top: 10px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+  <!-- <script src="main.js"></script> -->
+</head>
+
+<body>
+  <button onclick="updateChart('math')">Math</button>
+  <button onclick="updateChart('science')">Science</button>
+  <button onclick="updateChart('reading')">Reading</button>
+  <div id="chartArea"></div>
+  <script>
+    var margin = {
+      top: 20,
+      right: 20,
+      bottom: 60,
+      left: 60
+    }
+    var w = 600 - margin.left - margin.right,
+      h = 400 - margin.top - margin.bottom;
+    var path, subjects;
+    var timeParse = d3.timeParse("%Y%m%d");
+
+    $.getJSON('./data.json', function (json) {
+      subjects = json;
+
+      _.keys(subjects).forEach(subject => {
+        subjects[subject].forEach(d => {
+          d.date = timeParse(d.date)
+        })
+      });
+
+      path = d3.select('#chartArea')
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .append('g')
+        .append('path');
+
+      updateChart('math');
+    });
+
+    function updateChart(subject) {
+      var data = subjects[subject];
+      var dates = _.map(data, 'date')
+      var counts = _.map(data, 'count')
+
+      var xScale = d3.scaleTime()
+        .domain(d3.extent(dates))
+        .range([0, w]);
+
+      var yScale = d3.scaleLinear()
+        .domain(d3.extent(counts))
+        .range([h, 0]);
+
+      // Below code is to have line chart
+      // var line = d3.line()
+      //   .x(d => xScale(d.date))
+      //   .y(d => yScale(d.count))
+      //   .curve(d3.curveBundle);
+
+      // path.datum(data)
+      //   .transition()
+      //   .duration(450)
+      //   .attr('d', line);
+
+      // Below code is to have area chart
+      var area = d3.area()
+        .x(d => xScale(d.date))
+        .y0(d => yScale(0))
+        .y1(d => yScale(d.count))
+        .curve(d3.curveNatural);
+
+      path.datum(data)
+        .transition()
+        .duration(450)
+        .attr('d', area);
+    }
+  </script>
+</body>
+
+</html>
