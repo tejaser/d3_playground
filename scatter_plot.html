@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Ch10</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      padding-top: 50px;
+      padding-left: 100px;
+    }
+
+    #chartArea {
+      background-color: #ddd;
+      width: 400px;
+      height: 300px;
+    }
+
+    .bubble {
+      display: inline-block;
+      fill: purple;
+      fill-opacity: 0.5;
+      stroke: black;
+      stroke-weight: 1px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
+  <!-- <script src="main.js"></script> -->
+</head>
+
+<body>
+  <div id="chartArea"></div>
+  <script>
+    var dataset = _.map(_.range(75), function (i) {
+      return {
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        r: Math.random() * 30
+      }
+    })
+    var multiplier = 7;
+    var margin = {
+      top: 40,
+      right: 40,
+      bottom: 40,
+      left: 40
+    }
+    var w = 400 - margin.left - margin.right,
+      h = 300 - margin.top - margin.bottom,
+      barWidth = 20;
+    var dataMax = d3.max(dataset, d => d.y);
+
+    var xScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([0, w]);
+
+    var yScale = d3.scaleLinear()
+      .domain([0, dataMax])
+      .range([0, h]);
+
+    var colorScale3 = d3.scaleQuantile()
+      .domain([0, 10, dataset.length - 10, dataset.length])
+      .range(['brown', 'steelblue', 'red']);
+
+    var svg = d3.select('#chartArea').append('svg')
+      .attr('width', w + margin.left + margin.right)
+      .attr('height', h + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    svg.selectAll('circle')
+      .data(dataset)
+      .enter()
+      .append('circle')
+      .attr('cx', d => xScale(d.x)) // this multiplication value should be greater than the width of the bar
+      .attr('cy', d => h - yScale(d.y))
+      .attr('class', 'bubble')
+      .attr('r', d => d.r);
+  </script>
+</body>
+
+</html>
