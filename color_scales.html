@@ -57,10 +57,14 @@
     var colorScale1 = d3.scaleLinear()
       .domain([0, dataset.length])
       .range(['orange', 'green']);
-
+    // this color scale divides data based on the number of division in the domain, use quantize scale.
     var colorScale2 = d3.scaleQuantize()
       .domain([0, dataset.length])
       .range(['brown', 'steelblue']);
+    // lets say we want to highlight the first 10 and last 10 data entries in data with color, use quantile scale
+    var colorScale3 = d3.scaleQuantile()
+      .domain([0, 10, dataset.length - 10, dataset.length])
+      .range(['brown', 'steelblue', 'red']);
 
     var svg = d3.select('#chartArea').append('svg')
       .attr('width', w)
@@ -77,7 +81,8 @@
       .attr('height', d => yScale(d))
       // .attr('fill', colorScale);
       // .attr('fill', (d, i) => colorScale1(i));
-      .attr('fill', (d, i) => colorScale2(i));
+      // .attr('fill', (d, i) => colorScale2(i));
+      .attr('fill', (d, i) => colorScale3(i));
   </script>
 </body>
 
