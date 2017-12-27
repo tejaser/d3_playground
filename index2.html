@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style>
+    body {
+      margin: 10;
+      padding: 10;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    svg {
+      margin: 10;
+      padding: 10
+    }
+
+    path {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    // visits is the website speed where we want the tracker to be
+    var visits = 26,
+      chunks = [3, 5, 8, 20, 24],
+      ticks = [0, 3, 5, 8, 20, 30],
+      tickLabels = ['0', '3s', '5s', '8s', '20s', '30s'],
+      width = 300,
+      height = 50;
+    var margin = {
+      top: 0,
+      bottom: 0,
+      left: 20,
+      right: 0
+    };
+
+    // Feel free to change or delete any of the code you see in this editor!
+    var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", 500);
+
+    var threshold = d3.scaleThreshold()
+      .domain([3, 5, 8, 30])
+      .range(["#009654", "#00d48a", "#ffa171", "#fd4a49", ]);
+
+    var x = d3.scaleLinear().range([10, width - margin.left]).domain([0, 30]);
+
+
+    var xAxis = d3.axisBottom()
+      .scale(x);
+
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis
+        .ticks(5)
+        .tickValues(ticks)
+        .tickFormat(function (d, i) {
+          return tickLabels[i]
+        }))
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "translate(" + width + ",0)")
+      .attr("y", -5)
+
+    svg.selectAll("rect")
+      .data(threshold.range().map(function (color) {
+        var d = threshold.invertExtent(color);
+        if (d[0] == null) d[0] = x.domain()[0];
+        if (d[1] == null) d[1] = x.domain()[1];
+        return d;
+      }))
+      .enter().append("rect")
+      .attr("height", 20)
+      .attr("x", function (d) {
+        return x(d[0]);
+      })
+      .attr("y", height - 20)
+      .attr("width", function (d) {
+        return x(d[1]) - x(d[0]);
+      })
+      .attr("fill", function (d) {
+        return threshold(d[0]);
+      });
+
+    svg.append('g')
+      .append('text')
+      .attr('font-family', 'FontAwesome')
+      .attr("dx", x(visits))
+      .attr("dy", height - 20)
+      .attr('font-size', function (d) {
+        return 14 + 'px'
+      })
+      .text(function (d) {
+        return '\u2713' // this is unicode of the font awesome icon
+      });
+  </script>
+</body>
