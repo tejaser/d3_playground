@@ -58,6 +58,10 @@
       .domain([0, dataset.length])
       .range(['orange', 'green']);
 
+    var colorScale2 = d3.scaleQuantize()
+      .domain([0, dataset.length])
+      .range(['brown', 'steelblue']);
+
     var svg = d3.select('#chartArea').append('svg')
       .attr('width', w)
       .attr('height', h);
@@ -72,7 +76,8 @@
       .attr('width', bandwidth)
       .attr('height', d => yScale(d))
       // .attr('fill', colorScale);
-      .attr('fill', (d, i) => colorScale1(i));
+      // .attr('fill', (d, i) => colorScale1(i));
+      .attr('fill', (d, i) => colorScale2(i));
   </script>
 </body>
 
